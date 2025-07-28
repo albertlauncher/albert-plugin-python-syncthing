@@ -13,7 +13,7 @@ md_version = "3.0"
 md_name = "Syncthing"
 md_description = "Control the local Syncthing instance."
 md_license = "MIT"
-md_url = "https://github.com/albertlauncher/python/tree/main/syncthing"
+md_url = "https://github.com/albertlauncher/albert-plugin-python-syncthing"
 md_authors = "@manuelschneid3r"
 
 
