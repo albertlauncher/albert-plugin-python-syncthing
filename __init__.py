@@ -15,6 +15,7 @@ md_description = "Control the local Syncthing instance."
 md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-syncthing"
 md_authors = "@manuelschneid3r"
+md_maintainers = ["@manuelschneid3r"]
 
 
 # https://docs.syncthing.net/dev/rest.html
