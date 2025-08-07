@@ -9,13 +9,13 @@ from pathlib import Path
 from albert import *
 
 md_iid = "3.0"
-md_version = "3.0"
+md_version = "3.1"
 md_name = "Syncthing"
 md_description = "Control the local Syncthing instance."
 md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-syncthing"
-md_authors = "@manuelschneid3r"
-md_maintainers = ["@manuelschneid3r"]
+md_authors = ["@ManuelSchneid3r"]
+md_maintainers = ["@ManuelSchneid3r"]
 
 
 # https://docs.syncthing.net/dev/rest.html
