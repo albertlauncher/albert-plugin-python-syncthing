@@ -8,7 +8,7 @@ from pathlib import Path
 
 from albert import *
 
-md_iid = "3.0"
+md_iid = "4.0"
 md_version = "3.1"
 md_name = "Syncthing"
 md_description = "Control the local Syncthing instance."
@@ -73,13 +73,17 @@ class Syncthing:
 class Plugin(PluginInstance, GlobalQueryHandler):
 
     config_key = 'syncthing_api_key'
-    icon_urls_active = [f"file:{Path(__file__).parent}/syncthing_active.svg"]
-    icon_urls_inactive = [f"file:{Path(__file__).parent}/syncthing_inactive.svg"]
+    icon_path_active = Path(__file__).parent/"syncthing_active.svg"
+    icon_path_inactive = Path(__file__).parent/"syncthing_inactive.svg"
 
     def __init__(self):
         PluginInstance.__init__(self)
         GlobalQueryHandler.__init__(self)
         self.st = Syncthing(self.readConfig(self.config_key, str) or '')
+
+    @staticmethod
+    def makeIcon(active: bool = True):
+        return makeImageIcon(Plugin.icon_path_active if active else Plugin.icon_path_inactive)
 
     def defaultTrigger(self):
         return 'st '
@@ -108,7 +112,10 @@ class Plugin(PluginInstance, GlobalQueryHandler):
         try:
             super().handleTriggerQuery(query)
         except Exception as e:
-            query.add(StandardItem(id="err", text="Error", subtext=str(e), iconUrls=self.icon_urls_active))
+            query.add(StandardItem(id="err",
+                                   text="Error",
+                                   subtext=str(e),
+                                   iconFactory=lambda:makeImageIcon(Plugin.icon_path_active)))
 
     def handleGlobalQuery(self, query):
 
@@ -150,7 +157,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                     text=f"{device_name}",
                     subtext=f"{'PAUSED · ' if d['paused'] else ''}Device · "
                             f"Shared: {device_folders if device_folders else 'Nothing'}.",
-                    iconUrls=self.icon_urls_inactive if d['paused'] else self.icon_urls_active,
+                    iconFactory=lambda p=d['paused']: Plugin.makeIcon(not p),
                     actions=actions
                 )
 
@@ -170,12 +177,18 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                 actions.append(Action("open", "Open", lambda p=f['path']: openFile(p)))
                 actions.append(Action("scan", "Scan", lambda fid=folder_id: self.st.scanFolder(fid)))
 
+                def makeFolderIcon(paused: bool):
+                    return makeComposedIcon(makeStandardIcon(StandardIconType.DirIcon),
+                                            Plugin.makeIcon(not paused),
+                                            1, .5)
+
                 item = StandardItem(
                     id=folder_id,
                     text=folder_name,
                     subtext=f"{'PAUSED · ' if f['paused'] else ''}Folder · {f['path']} · "
                             f"Shared with {folders_devices if folders_devices else 'nobody'}.",
-                    iconUrls=self.icon_urls_inactive if f['paused'] else self.icon_urls_active,
+                    inputActionText="",
+                    iconFactory=lambda p=d['paused']: makeFolderIcon(p),
                     actions=actions
                 )
                 results.append(RankItem(item, match))
