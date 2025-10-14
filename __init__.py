@@ -9,7 +9,7 @@ from pathlib import Path
 from albert import *
 
 md_iid = "4.0"
-md_version = "3.1"
+md_version = "3.1.1"
 md_name = "Syncthing"
 md_description = "Control the local Syncthing instance."
 md_license = "MIT"
