@@ -115,7 +115,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
             query.add(StandardItem(id="err",
                                    text="Error",
                                    subtext=str(e),
-                                   iconFactory=lambda:makeImageIcon(Plugin.icon_path_active)))
+                                   icon_factory=lambda:makeImageIcon(Plugin.icon_path_active)))
 
     def handleGlobalQuery(self, query):
 
@@ -157,7 +157,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                     text=f"{device_name}",
                     subtext=f"{'PAUSED · ' if d['paused'] else ''}Device · "
                             f"Shared: {device_folders if device_folders else 'Nothing'}.",
-                    iconFactory=lambda p=d['paused']: Plugin.makeIcon(not p),
+                    icon_factory=lambda p=d['paused']: Plugin.makeIcon(not p),
                     actions=actions
                 )
 
@@ -187,8 +187,8 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                     text=folder_name,
                     subtext=f"{'PAUSED · ' if f['paused'] else ''}Folder · {f['path']} · "
                             f"Shared with {folders_devices if folders_devices else 'nobody'}.",
-                    inputActionText="",
-                    iconFactory=lambda p=d['paused']: makeFolderIcon(p),
+                    input_action_text="",
+                    icon_factory=lambda p=d['paused']: makeFolderIcon(p),
                     actions=actions
                 )
                 results.append(RankItem(item, match))
