@@ -8,7 +8,7 @@ from pathlib import Path
 
 from albert import *
 
-md_iid = "4.0"
+md_iid = "5.0"
 md_version = "3.1.1"
 md_name = "Syncthing"
 md_description = "Control the local Syncthing instance."
@@ -108,16 +108,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
             }
         ]
 
-    def handleTriggerQuery(self, query):
-        try:
-            super().handleTriggerQuery(query)
-        except Exception as e:
-            query.add(StandardItem(id="err",
-                                   text="Error",
-                                   subtext=str(e),
-                                   icon_factory=lambda:makeImageIcon(Plugin.icon_path_active)))
-
-    def handleGlobalQuery(self, query):
+    def getRankItems(self, ctx):
 
         config = self.st.config()
 
@@ -136,8 +127,8 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                 devices[d['deviceID']]['_shared_folders'][f['id']] = f
             folders[f['id']] = f
 
-        results = []
-        matcher = Matcher(query.string)
+        rank_items = []
+        matcher = Matcher(ctx.query)
 
         # create device items
         for device_id, d in devices.items():
@@ -161,7 +152,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                     actions=actions
                 )
 
-                results.append(RankItem(item, match))
+                rank_items.append(RankItem(item, match))
 
         # create folder items
         for folder_id, f in folders.items():
@@ -182,15 +173,37 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                                             Plugin.makeIcon(not paused),
                                             1, .5)
 
-                item = StandardItem(
-                    id=folder_id,
-                    text=folder_name,
-                    subtext=f"{'PAUSED · ' if f['paused'] else ''}Folder · {f['path']} · "
-                            f"Shared with {folders_devices if folders_devices else 'nobody'}.",
-                    input_action_text="",
-                    icon_factory=lambda p=d['paused']: makeFolderIcon(p),
-                    actions=actions
+                rank_items.append(
+                    RankItem(
+                        StandardItem(
+                            id=folder_id,
+                            text=folder_name,
+                            subtext=f"{'PAUSED · ' if f['paused'] else ''}Folder · {f['path']} · "
+                                    f"Shared with {folders_devices if folders_devices else 'nobody'}.",
+                            input_action_text="",
+                            icon_factory=lambda p=d['paused']: makeFolderIcon(p),
+                            actions=actions
+                        ),
+                        match
+                    )
                 )
-                results.append(RankItem(item, match))
 
-        return results
+        return rank_items
+
+    def rankItems(self, ctx):
+        try:
+            return self.getRankItems(ctx)
+        except Exception as e:
+            # if triggered show error item
+            if ctx.trigger:
+                return [
+                    RankItem(
+                        StandardItem(
+                            id="err",
+                            text="Error",
+                            subtext=str(e),
+                            icon_factory=lambda:makeImageIcon(Plugin.icon_path_active)
+                        ),
+                        0
+                    )
+                ]
