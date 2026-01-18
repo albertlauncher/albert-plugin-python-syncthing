@@ -83,7 +83,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
 
     @staticmethod
     def makeIcon(active: bool = True):
-        return makeImageIcon(Plugin.icon_path_active if active else Plugin.icon_path_inactive)
+        return Icon.image(Plugin.icon_path_active if active else Plugin.icon_path_inactive)
 
     def defaultTrigger(self):
         return 'st '
@@ -169,9 +169,9 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                 actions.append(Action("scan", "Scan", lambda fid=folder_id: self.st.scanFolder(fid)))
 
                 def makeFolderIcon(paused: bool):
-                    return makeComposedIcon(makeStandardIcon(StandardIconType.DirIcon),
-                                            Plugin.makeIcon(not paused),
-                                            1, .5)
+                    return Icon.composed(Icon.standard(Icon.StandardIconType.DirIcon),
+                                         Plugin.makeIcon(not paused),
+                                         1, .5)
 
                 rank_items.append(
                     RankItem(
@@ -181,7 +181,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                             subtext=f"{'PAUSED · ' if f['paused'] else ''}Folder · {f['path']} · "
                                     f"Shared with {folders_devices if folders_devices else 'nobody'}.",
                             input_action_text="",
-                            icon_factory=lambda p=d['paused']: makeFolderIcon(p),
+                            icon_factory=lambda p=f['paused']: makeFolderIcon(p),
                             actions=actions
                         ),
                         match
@@ -202,7 +202,7 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                             id="err",
                             text="Error",
                             subtext=str(e),
-                            icon_factory=lambda:makeImageIcon(Plugin.icon_path_active)
+                            icon_factory=lambda:Icon.image(Plugin.icon_path_active)
                         ),
                         0
                     )
