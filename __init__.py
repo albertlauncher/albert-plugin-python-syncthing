@@ -34,7 +34,7 @@ class Syncthing:
         req = urllib.request.Request(url, data=body, headers=headers, method=method)
 
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, timeout=3) as resp:
                 if not (200 <= resp.status < 300):
                     raise Exception(f"Unexpected status {resp.status}")
                 content = resp.read().decode()
@@ -207,3 +207,4 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                         0
                     )
                 ]
+            return []
