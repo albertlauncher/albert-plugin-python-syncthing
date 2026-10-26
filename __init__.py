@@ -207,3 +207,4 @@ class Plugin(PluginInstance, GlobalQueryHandler):
                         0
                     )
                 ]
+            return []
